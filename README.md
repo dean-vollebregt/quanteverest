@@ -1,9 +1,9 @@
 # Welcome 
-This is the API that powers www.quanteverest.com
-The code has been sanitised and is for demonstration only 
-the real repository is hosted privately on Bitbucket, please ask for access. 
+This is the API that powers www.quanteverest.com 
 
-The live sites cn be found here:
+The code has been sanitised and is for demonstration only the real repository is hosted privately on Bitbucket, please ask for access. 
+
+The live sites can be found here:
 
 # Production
 www.quanteverest.com
