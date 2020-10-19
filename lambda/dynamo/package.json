@@ -1,0 +1,15 @@
+{
+  "name": "dynamo",
+  "version": "1.0.0",
+  "description": "interface to dynamodb",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "locally": "node -e \"console.log(require('./index').handler({}));\""
+  },
+  "author": "dean vollebregt",
+  "license": "ISC",
+  "devDependencies": {
+    "aws-sdk": "2.553.0"
+  }
+}

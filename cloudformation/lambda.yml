@@ -1,0 +1,313 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  STAGE:
+    Description: Stage name for the Cloudformation stack
+    Type: String
+
+  IAMStackOutputs:
+    Description: Generated stack name for IAMStack
+    Type: String
+
+Resources:
+
+  administrator:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[administrator ,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/administrator-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '5'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+  APIadministratorPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref administrator
+      Principal: apigateway.amazonaws.com
+
+  asxData:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[asxData ,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/asxData-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '59'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+
+  APIasxDataPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref asxData
+      Principal: apigateway.amazonaws.com
+
+  dynamo:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[dynamo ,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/dynamo-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '5'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+  APIdynamoPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref dynamo
+      Principal: apigateway.amazonaws.com
+
+  manageS3Objects:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[manageS3Objects ,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/manageS3Objects-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '5'
+      TracingConfig:
+        Mode: Active
+
+  APImanageS3ObjectsPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref manageS3Objects
+      Principal: apigateway.amazonaws.com
+
+  alerts:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[alerts,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/alerts-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '180'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+  afterMarketReports:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[afterMarketReports,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/afterMarketReports-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '59'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+  afterMarketReportsData:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[afterMarketReportsData,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/afterMarketReportsData-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '600'
+      MemorySize: '3008'
+      TracingConfig:
+        Mode: Active
+
+  optionsData:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[optionsData,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/optionsData-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '30'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+
+  APIoptionsDataPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref optionsData
+      Principal: apigateway.amazonaws.com
+
+  sendEmails:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[sendEmails,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/sendEmails-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '5'
+      TracingConfig:
+        Mode: Active
+
+  APIsendEmailsPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:InvokeFunction'
+      FunctionName: !Ref sendEmails
+      Principal: apigateway.amazonaws.com
+
+  weeklyReports:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[weeklyReports,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/weeklyReports-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '59'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+  weeklyReportsData:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      FunctionName: !Join ["_",[weeklyReportsData,!Ref STAGE]]
+      Handler: index.handler
+      Role:
+        Fn::ImportValue: !Sub '${IAMStackOutputs}-AWSLambdaFullAccessRoleARN'
+      Code:
+        S3Bucket: quanteverest
+        S3Key: !Sub 'lambda/weeklyReportsData-${STAGE}.zip'
+      Runtime: nodejs10.x
+      Timeout: '59'
+      MemorySize: '2560'
+      TracingConfig:
+        Mode: Active
+      Environment:
+        Variables:
+          STAGE: !Ref STAGE
+
+Outputs:
+  administratorARN:
+    Value: !GetAtt administrator.Arn
+    Description: administrator Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-administratorARN'
+
+  asxDataARN:
+    Value: !GetAtt asxData.Arn
+    Description: asxData Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-asxDataARN'
+
+  afterMarketReportsARN:
+    Value: !GetAtt afterMarketReports.Arn
+    Description: afterMarketReports Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-afterMarketReportsARN'
+
+  afterMarketReportsDataARN:
+    Value: !GetAtt afterMarketReportsData.Arn
+    Description: afterMarketReportsData Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-afterMarketReportsDataARN'
+
+  dynamoARN:
+    Value: !GetAtt dynamo.Arn
+    Description: dynamo Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-dynamoARN'
+
+  manageS3ObjectsARN:
+    Value: !GetAtt manageS3Objects.Arn
+    Description: manaageS3Objects Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-manageS3ObjectsARN'
+
+  alertsARN:
+    Value: !GetAtt alerts.Arn
+    Description: alerts Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-alertsARN'
+
+  optionsDataARN:
+    Value: !GetAtt optionsData.Arn
+    Description: optionsDataLambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-optionsDataARN'
+
+  sendEmailsARN:
+    Value: !GetAtt sendEmails.Arn
+    Description: sendEmails Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-sendEmailsARN'
+
+  weeklyReportsARN:
+    Value: !GetAtt weeklyReports.Arn
+    Description: weeklyReports Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-weeklyReportsARN'
+
+  weeklyReportsDataARN:
+    Value: !GetAtt weeklyReportsData.Arn
+    Description: weeklyReportsData Lambda Function ARN
+    Export:
+      Name: !Sub '${AWS::StackName}-weeklyReportsDataARN'
+
+  StackName:
+    Value: !Ref 'AWS::StackName'

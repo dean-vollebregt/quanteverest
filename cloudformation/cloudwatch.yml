@@ -1,0 +1,125 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  STAGE:
+    Description: Stage name for the Cloudformation stack
+    Type: String
+
+  LambdaStackOutputs:
+    Description: ARN's for lamba Functions
+    Type: String
+
+Conditions:
+  IsProd: !Equals [!Ref STAGE, "prod"]
+
+Resources:
+
+  ScheduledRuleAlerts:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "ScheduledRule for Alerts Function"
+      ScheduleExpression: "cron(0 1 ? * MON-FRI *)"
+      State: !If [ IsProd, "ENABLED", "DISABLED"]
+      Targets:
+        - Arn:
+            Fn::ImportValue: !Sub '${LambdaStackOutputs}-alertsARN'
+          Id: "TargetFunctionV1"
+
+  ScheduledRuleAfterMarketReports:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "ScheduledRule for afterMarketReports Function"
+      ScheduleExpression: "cron(30 9 ? * MON-FRI *)"
+      State: !If [ IsProd, "ENABLED", "DISABLED"]
+      Targets:
+        - Arn:
+            Fn::ImportValue: !Sub '${LambdaStackOutputs}-afterMarketReportsARN'
+          Id: "TargetFunctionV1"
+
+  ScheduledRuleAfterMarketReportsData:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "ScheduledRule for afterMarketReportsData Function"
+      ScheduleExpression: "cron(20 9 ? * MON-FRI *)"
+      State: !If [ IsProd, "ENABLED", "DISABLED"]
+      Targets:
+        - Arn:
+            Fn::ImportValue: !Sub '${LambdaStackOutputs}-afterMarketReportsDataARN'
+          Id: "TargetFunctionV1"
+
+  ScheduledRuleWeeklyReports:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "ScheduledRule for weeklyReports Function"
+      ScheduleExpression: "cron(0 22 ? * SUN *)"
+      State: !If [ IsProd, "ENABLED", "DISABLED"]
+      Targets:
+        - Arn:
+            Fn::ImportValue: !Sub '${LambdaStackOutputs}-weeklyReportsARN'
+          Id: "TargetFunctionV1"
+
+  ScheduledRuleWeeklyReportsData:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: "ScheduledRule for weeklyReportsData Function"
+      ScheduleExpression: "cron(55 21 ? * SUN *)"
+      State: !If [ IsProd, "ENABLED", "DISABLED"]
+      Targets:
+        - Arn:
+            Fn::ImportValue: !Sub '${LambdaStackOutputs}-weeklyReportsDataARN'
+          Id: "TargetFunctionV1"
+
+  PermissionForEventsToInvokeLambdaAlerts:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join ["_",[alerts ,!Ref STAGE]]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "ScheduledRuleAlerts"
+          - "Arn"
+
+  PermissionForEventsToInvokeLambdaAfterMarketsReports:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join ["_",[afterMarketReports ,!Ref STAGE]]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "ScheduledRuleAfterMarketReports"
+          - "Arn"
+
+  PermissionForEventsToInvokeLambdaAfterMarketsReportsData:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join ["_",[afterMarketReportsData ,!Ref STAGE]]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "ScheduledRuleAfterMarketReportsData"
+          - "Arn"
+
+  PermissionForEventsToInvokeLambdaWeeklyReports:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join ["_",[weeklyReports ,!Ref STAGE]]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "ScheduledRuleWeeklyReports"
+          - "Arn"
+
+  PermissionForEventsToInvokeLambdaWeeklyReportsData:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Join ["_",[weeklyReportsData ,!Ref STAGE]]
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "ScheduledRuleWeeklyReportsData"
+          - "Arn"

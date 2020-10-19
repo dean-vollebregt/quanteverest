@@ -1,0 +1,21 @@
+{
+  "name": "weeklyReports",
+  "version": "1.0.0",
+  "description": "Weekly reports of leading economic indicators and economic data",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "locally": "node -e \"console.log(require('./index').handler({}));\""
+  },
+  "author": "dean vollebregt",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "pdfmake": "^0.1.57",
+    "sharp": "^0.25.3",
+    "vega": "^5.13.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "2.553.0"
+  }
+}

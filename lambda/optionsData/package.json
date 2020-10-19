@@ -1,0 +1,19 @@
+{
+  "name": "optionsdata",
+  "version": "1.0.0",
+  "description": "function to scrape options data from asx website",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "locally": "node -e \"console.log(require('./index').handler({}));\""
+  },
+  "author": "dean vollebregt",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.20.0",
+    "moment": "^2.29.1"
+  },
+  "devDependencies": {
+    "aws-sdk": "2.553.0"
+  }
+}

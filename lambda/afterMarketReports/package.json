@@ -1,0 +1,19 @@
+{
+  "name": "reports",
+  "version": "1.0.0",
+  "description": "After market report of options traded with more than 6 months expiry",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "locally": "node -e \"console.log(require('./index').handler({}));\""
+  },
+  "author": "dean vollebregt",
+  "license": "ISC",
+  "dependencies": {
+    "fs": "0.0.1-security",
+    "pdfmake": "^0.1.57"
+  },
+  "devDependencies": {
+    "aws-sdk": "2.553.0"
+  }
+}

@@ -1,0 +1,59 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  MasterS3Location:
+    Description: Master File Location
+    Type: String
+    Default: 'https://s3-ap-southeast-2.amazonaws.com/quanteverest-test/cloudformation/'
+    MinLength: 1
+
+  STAGE:
+    Description: Stage name for the Cloudformation stack
+    Type: String
+    AllowedValues:
+      - prod
+      - dev
+    Default: dev
+
+Description: Master template that includes nested templates
+
+Resources:
+  IAMStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        STAGE: !Ref STAGE
+      TemplateURL: !Join ["",[!Ref MasterS3Location,"iam.yml"]]
+      TimeoutInMinutes: '2'
+
+  LambdaStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        STAGE: !Ref STAGE
+        IAMStackOutputs: !GetAtt IAMStack.Outputs.StackName
+      TemplateURL: !Join ["",[!Ref MasterS3Location,"lambda.yml"]]
+      TimeoutInMinutes: '3'
+
+  APIGatewayStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        STAGE: !Ref STAGE
+        LambdaStackOutputs: !GetAtt LambdaStack.Outputs.StackName
+      TemplateURL: !Join ["",[!Ref MasterS3Location,"apiGateway.yml"]]
+      TimeoutInMinutes: '3'
+
+  CloudwatchStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      Parameters:
+        STAGE: !Ref STAGE
+        LambdaStackOutputs: !GetAtt LambdaStack.Outputs.StackName
+      TemplateURL: !Join ["",[!Ref MasterS3Location,"cloudwatch.yml"]]
+      TimeoutInMinutes: '3'
+
+Outputs:
+  APIEndpoint:
+    Description: "API Endpoint"
+    Value: !GetAtt APIGatewayStack.Outputs.APIEndpoint
